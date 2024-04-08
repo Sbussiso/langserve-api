@@ -11,13 +11,14 @@ load_dotenv()
 
 app = FastAPI()
 
+
 # Initialize ChatGPT model with your OpenAI API key
 model = ChatOpenAI(openai_api_key=os.getenv('OPENAI_API_KEY'))
 
-
 # Define a prompt template for the user input
-response = ChatPromptTemplate.from_template("you are a helpful AI assistant. PROMPT: {prompt}")
+response = ChatPromptTemplate.from_template("you are a helpful AI assistant. PROMPT: {prompt} ")
 
+history = ChatMessageHistory()
 
 # Create an API route
 @app.get("/")
@@ -26,7 +27,9 @@ async def redirect_root_to_docs():
 
 
 # Add the route for the one-shot chat API
-add_routes(app, response | model, path="/gpt-one-shot")
+add_routes(app, 
+           response | model | history, 
+           path="/gpt-one-shot")
 
 #TODO: 
 #add_routes(something | model, path="/gpt-mem-bare")
